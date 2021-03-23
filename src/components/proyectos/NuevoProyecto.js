@@ -4,7 +4,13 @@ import ProyectoContext from "../../context/proyectos/ProyectoContext";
 const NuevoProyecto = () => {
   //obtenemos el state del formulario desde el context
   const proyectosContext = useContext(ProyectoContext);
-  const { formulario, mostrarFormulario } = proyectosContext;
+  const {
+    formulario,
+    errorformulario,
+    mostrarFormulario,
+    agregarProyecto,
+    mostrarError,
+  } = proyectosContext;
 
   //state para proyecto
   const [proyecto, guardarProyecto] = useState({
@@ -27,10 +33,18 @@ const NuevoProyecto = () => {
     e.preventDefault();
 
     //validar el proyecto
+    if (nombre === "") {
+      mostrarError();
+      return;
+    }
 
     //agregar al state
+    agregarProyecto(proyecto);
 
     //reiniciar el form
+    guardarProyecto({
+      nombre: "",
+    });
   };
 
   return (
@@ -59,6 +73,10 @@ const NuevoProyecto = () => {
             Value="Agregar Proyecto"
           />
         </form>
+      ) : null}
+
+      {errorformulario ? (
+        <p className="mensaje error">El nombre del proyecto es obligatorio</p>
       ) : null}
     </>
   );
