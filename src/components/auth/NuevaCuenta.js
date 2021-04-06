@@ -1,7 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
+import AlertaContext from "../../context/alertas/AlertaContext";
+import AuthContext from "../../context/autenticacion/AuthContext";
 
-const NuevaCuenta = () => {
+const NuevaCuenta = (props) => {
+  console.log(props);
+  //extraer los valores del context
+  const alertaContext = useContext(AlertaContext);
+  const { alerta, mostrarAlerta } = alertaContext;
+
+  const authContext = useContext(AuthContext);
+  const { mensaje, autenticado, registrarUsuario } = authContext;
+
+  //en caso de que el usuario se haya registrado, autentificado, o sea un registro duplicado
+  useEffect(() => {
+    //evaluar si el usuario esta autenticado
+    if (autenticado) {
+      props.history.push("/proyectos");
+    }
+    //evaluar si hay un menasje para mostrar
+    if (mensaje) {
+      mostrarAlerta(mensaje.msg, mensaje.categoria);
+    }
+    // eslint-disable-next-line
+  }, [mensaje, autenticado, props.history]);
+
   //State para iniciar sesion
   const [usuario, guardarUsuario] = useState({
     nombre: "",
@@ -25,16 +48,39 @@ const NuevaCuenta = () => {
     e.preventDefault();
 
     //validar que no queden campos vacios
+    if (
+      nombre.trim() === "" ||
+      email.trim() === "" ||
+      password.trim() === "" ||
+      confirmar.trim() === ""
+    ) {
+      mostrarAlerta("Todos los campos son obligatorios", "alerta-error");
+      return;
+    }
 
     //validar que el password sea como minimo de 6 char
-
+    if (password.length < 6) {
+      mostrarAlerta(
+        "El password deber ser de al menos 6 caracteres",
+        "alerta-error"
+      );
+      return;
+    }
     //validar que ambos password sean iguales
+    if (password !== confirmar) {
+      mostrarAlerta("Los passwords no son iguales", "alerta-error");
+      return;
+    }
 
     //fianlmente pasarlo al action
+    registrarUsuario({ nombre, email, password });
   };
 
   return (
     <div className="form-usuario">
+      {alerta ? (
+        <div className={`alerta ${alerta.categoria}`}>{alerta.msg}</div>
+      ) : null}
       <div className="contenedor-form sombra-dark">
         <h1>Registrarme</h1>
 

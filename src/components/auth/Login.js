@@ -1,7 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
+import AlertaContext from "../../context/alertas/AlertaContext";
+import AuthContext from "../../context/autenticacion/AuthContext";
 
-const Login = () => {
+const Login = (props) => {
+  //extraer los valores del context
+  const alertaContext = useContext(AlertaContext);
+  const { alerta, mostrarAlerta } = alertaContext;
+
+  const authContext = useContext(AuthContext);
+  const { mensaje, autenticado, iniciarSesion } = authContext;
+
+  //en caso de que el passwordo usuario no exista
+  useEffect(() => {
+    console.log("soy el useffect");
+    //evaluar si el usuario esta autenticado
+    if (autenticado) {
+      console.log("y estoy autenticado");
+      props.history.push("/proyectos");
+    }
+
+    //evaluar si hay un menasje para mostrar
+    if (mensaje) {
+      mostrarAlerta(mensaje.msg, mensaje.categoria);
+    }
+    // eslint-disable-next-line
+  }, [mensaje, autenticado, props.history]);
+
   //State para iniciar sesion
   const [usuario, guardarUsuario] = useState({ email: "", password: "" });
 
@@ -20,12 +45,19 @@ const Login = () => {
     e.preventDefault();
 
     //validar que no queden campos vacios
+    if (email.trim() === "" || password.trim === "") {
+      mostrarAlerta("Todos los campos son obligatorios", "alerta-error");
+    }
 
     //pasarlo al action
+    iniciarSesion({ email, password });
   };
 
   return (
     <div className="form-usuario">
+      {alerta ? (
+        <div className={`alerta ${alerta.categoria}`}>{alerta.msg}</div>
+      ) : null}
       <div className="contenedor-form sombra-dark">
         <h1>Iniciar Sesión</h1>
 
