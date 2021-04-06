@@ -70,7 +70,7 @@ const NuevoProyecto = () => {
           <input
             type="submit"
             className="btn btn-primario btn-block"
-            Value="Agregar Proyecto"
+            value="Agregar Proyecto"
           />
         </form>
       ) : null}

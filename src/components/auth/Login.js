@@ -13,10 +13,8 @@ const Login = (props) => {
 
   //en caso de que el passwordo usuario no exista
   useEffect(() => {
-    console.log("soy el useffect");
     //evaluar si el usuario esta autenticado
     if (autenticado) {
-      console.log("y estoy autenticado");
       props.history.push("/proyectos");
     }
 
